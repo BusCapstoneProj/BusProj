@@ -59,4 +59,12 @@ public class RouteController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    // Find route by source and destination
+    @GetMapping("/findRoute")
+    public ResponseEntity<Route> findRouteByStops(@RequestParam String source, @RequestParam String destination) {
+        Optional<Route> route = routeService.findRouteByStops(source, destination);
+        return route.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }

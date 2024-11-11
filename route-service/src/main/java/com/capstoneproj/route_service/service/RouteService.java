@@ -52,4 +52,16 @@ public class RouteService {
         }
         return false;  // Return false if route not found
     }
+
+    // Find route by source and destination with correct stop order
+    public Optional<Route> findRouteByStops(String source, String destination) {
+        return routeRepository.findAll().stream()
+                .filter(route -> {
+                    List<String> stops = route.getRouteStops();
+                    int sourceIndex = stops.indexOf(source);
+                    int destinationIndex = stops.indexOf(destination);
+                    return sourceIndex != -1 && destinationIndex != -1 && sourceIndex < destinationIndex;
+                })
+                .findFirst();  // Return the first route that matches the criteria, if any
+    }
 }

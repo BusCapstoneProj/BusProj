@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/buses")
 public class BusController {
@@ -34,7 +36,13 @@ public class BusController {
         return ResponseEntity.ok(updatedBus);
     }
 
-    // Get current occupancy of a specific bus
+    @GetMapping("/route/{routeId}")
+    public ResponseEntity<List<Bus>> getBusesByRoute(@PathVariable String routeId) {
+        List<Bus> buses = busService.getBusesByRouteId(routeId);
+        return ResponseEntity.ok(buses);
+    }
+
+    /*// Get current occupancy of a specific bus
     @GetMapping("/{busId}/occupancy")
     public ResponseEntity<Integer> getOccupancy(@PathVariable String busId) {
         int occupancy = busService.getCurrentOccupancy(busId);
@@ -46,12 +54,14 @@ public class BusController {
     public ResponseEntity<Void> updateLocation(@PathVariable String busId, @RequestParam String newLocation) {
         busService.updateBusLocation(busId, newLocation);
         return ResponseEntity.ok().build();
-    }
-
- /*   // Update occupancy when passengers board/deboard
+    } */
     @PutMapping("/{busId}/occupancy")
-    public ResponseEntity<Void> updateOccupancy(@PathVariable String busId, @RequestParam int delta) {
+    public ResponseEntity<Void> updateOccupancy(
+            @PathVariable String busId,
+            @RequestParam int delta) {
         busService.updateOccupancy(busId, delta);
         return ResponseEntity.ok().build();
-    } */
+    }
+
+
 }

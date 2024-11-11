@@ -5,6 +5,9 @@ import com.capstoneproj.bus_service.repository.BusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class BusService {
 
@@ -15,7 +18,7 @@ public class BusService {
 
     // Add a new bus
     public Bus addBus(Bus bus) {
-        bus.setCurrentOccupancy(0);  // Initialize occupancy to zero
+        //bus.setCurrentOccupancy(bus.getSeatCapacity());  // Initialize occupancy to zero
         return busRepository.save(bus);
     }
 
@@ -36,6 +39,7 @@ public class BusService {
         bus.setCurrentLocation(busDetails.getCurrentLocation());
         return busRepository.save(bus);
     }
+    /*
 
     // Fetch current occupancy of a specific bus
     public int getCurrentOccupancy(String busId) {
@@ -72,4 +76,24 @@ public class BusService {
             throw new RuntimeException("Invalid occupancy update");
         }
     } */
+
+    public List<Bus> getBusesByRouteId(String routeId) {
+        return busRepository.findAll().stream()
+                .filter(bus -> routeId.equals(bus.getRouteId()))
+                .collect(Collectors.toList());
+    }
+
+    public void updateOccupancy(String busId, int delta) {
+        Bus bus = busRepository.findById(busId)
+                .orElseThrow(() -> new RuntimeException("Bus not found"));
+
+        // Update the current occupancy, ensuring it stays within valid limits
+        int newOccupancy = bus.getCurrentOccupancy() + delta;
+        if (newOccupancy >= 0 && newOccupancy <= bus.getSeatCapacity()) {
+            bus.setCurrentOccupancy(newOccupancy);
+            busRepository.save(bus);
+        } else {
+            throw new RuntimeException("Invalid occupancy update");
+        }
+    }
 }
