@@ -63,5 +63,13 @@ public class BusController {
         return ResponseEntity.ok().build();
     }
 
-
+    // Controller to handle stop updates and occupancy-based decisions
+    @PutMapping("/{busId}/stop")
+    public ResponseEntity<Void> updateStop(
+            @PathVariable String busId,
+            @RequestParam String location,
+            @RequestParam int deltaOccupancy) {
+        busService.updateStopAndCheckThreshold(busId, location, deltaOccupancy);
+        return ResponseEntity.ok().build();
+    }
 }
