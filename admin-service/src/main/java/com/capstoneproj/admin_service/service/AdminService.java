@@ -29,8 +29,8 @@ public class AdminService {
     }
 
     // Assign a route to a bus
-    public void assignRouteToBus(String busId, String routeId) {
-        busClient.assignRouteToBus(busId, routeId);
+    public String assignRouteToBus(String busId, String routeId) {
+        return busClient.updateBusByRoute(busId, routeId);
     }
 
     // Add or update a route in the RouteService

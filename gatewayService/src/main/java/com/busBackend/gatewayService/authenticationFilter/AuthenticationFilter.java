@@ -1,4 +1,4 @@
-package com.binBuddyBackend.gatewayService.authenticationFilter;
+package com.busBackend.gatewayService.authenticationFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +12,7 @@ import org.springframework.web.client.RestClient;
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     @Autowired
-    private RouteValidator validator;
+    private com.busBackend.gatewayService.authenticationFilter.RouteValidator validator;
 
 
 
@@ -55,7 +55,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     RestClient restClient = RestClient.create();
                     restClient
                             .get()
-                            .uri("http://authenticationservice-sr:8090/api/auth/validate/token?token=" + authHeaderToken)
+                            .uri("http://localhost:8090/api/auth/validate/token?token=" + authHeaderToken)
                             .retrieve()
                             .body(Boolean.class);
 

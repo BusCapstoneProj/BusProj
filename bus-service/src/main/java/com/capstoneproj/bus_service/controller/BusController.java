@@ -3,6 +3,7 @@ package com.capstoneproj.bus_service.controller;
 import com.capstoneproj.bus_service.entity.Bus;
 import com.capstoneproj.bus_service.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +36,16 @@ public class BusController {
         Bus updatedBus = busService.updateBus(busId, busDetails);
         return ResponseEntity.ok(updatedBus);
     }
+    //update bus by route
+    @PutMapping("/updateRoute/{busId}/{routeId}")
+    public String updateBusByRoute(@PathVariable String busId, @PathVariable String routeId) {
+        busService.updateBusByRoute(busId, routeId);
+        return "updated";
+    }
 
+     // get buses by route
     @GetMapping("/route/{routeId}")
-    public ResponseEntity<List<Bus>> getBusesByRoute(@PathVariable String routeId) {
+    public ResponseEntity<List<Bus>> getBusesByRouteId(@PathVariable String routeId) {
         List<Bus> buses = busService.getBusesByRouteId(routeId);
         return ResponseEntity.ok(buses);
     }
@@ -63,13 +71,5 @@ public class BusController {
         return ResponseEntity.ok().build();
     }
 
-    // Controller to handle stop updates and occupancy-based decisions
-    @PutMapping("/{busId}/stop")
-    public ResponseEntity<Void> updateStop(
-            @PathVariable String busId,
-            @RequestParam String location,
-            @RequestParam int deltaOccupancy) {
-        busService.updateStopAndCheckThreshold(busId, location, deltaOccupancy);
-        return ResponseEntity.ok().build();
-    }
+
 }

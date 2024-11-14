@@ -1,4 +1,4 @@
-package com.binBuddyBackend.gatewayService.authenticationFilter;
+package com.busBackend.gatewayService.authenticationFilter;
 
 
 
@@ -15,7 +15,7 @@ public class RouteValidator {
             "/register",
             "/login",
             "/validate/token",
-            "/getbook",
+            "/getbus",
             "/getauthors");
     public Predicate<ServerHttpRequest> isSecured = request -> openApiEndpoints
             .stream()

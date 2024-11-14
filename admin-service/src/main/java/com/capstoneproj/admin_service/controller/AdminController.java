@@ -2,6 +2,7 @@ package com.capstoneproj.admin_service.controller;
 import com.capstoneproj.admin_service.dto.BusDto;
 import com.capstoneproj.admin_service.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,31 +14,31 @@ public class AdminController {
     private AdminService adminService;
 
     // Add a new bus
-    @PostMapping("/buses")
+    @PostMapping("/bus")
     public ResponseEntity<BusDto> addBus(@RequestBody BusDto bus) {
         BusDto addedBus = adminService.addBus(bus);
         return ResponseEntity.ok(addedBus);
     }
 
     // Delete a bus
-    @DeleteMapping("/buses/{busId}")
+    @DeleteMapping("/bus/{busId}")
     public ResponseEntity<Void> deleteBus(@PathVariable String busId) {
         adminService.deleteBus(busId);
         return ResponseEntity.noContent().build();
     }
 
     // Update a bus
-    @PutMapping("/buses/{busId}")
+    @PutMapping("/bus/{busId}")
     public ResponseEntity<BusDto> updateBus(@PathVariable String busId, @RequestBody BusDto busDetails) {
         BusDto updatedBus = adminService.updateBus(busId, busDetails);
         return ResponseEntity.ok(updatedBus);
     }
 
     // Assign a route to a bus
-    @PutMapping("/buses/{busId}/route")
-    public ResponseEntity<Void> assignRouteToBus(@PathVariable String busId, @RequestParam String routeId) {
-        adminService.assignRouteToBus(busId, routeId);
-        return ResponseEntity.ok().build();
+    @PutMapping("/bus/{busId}/route")
+    public ResponseEntity<String> assignRouteToBus(@PathVariable String busId, @RequestParam String routeId) {
+
+        return new ResponseEntity<>(adminService.assignRouteToBus(busId, routeId), HttpStatus.OK);
     }
 
     // Save or update a route
