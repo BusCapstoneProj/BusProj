@@ -6,6 +6,7 @@ import com.capstoneproj.bus_service.client.AdminClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +26,25 @@ public class BusService {
     public Bus updateBus(String busId, Bus busDetails) {
         Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new RuntimeException("Bus not found"));
-//        bus.setSeatCapacity(busDetails.getSeatCapacity());
         bus.setCurrentLocation(busDetails.getCurrentLocation());
-        updateOccupancy(busId,0);
-        return busRepository.save(bus);
+        bus.setCurrentOccupancy(busDetails.getCurrentOccupancy());
+
+        List<Integer> listo = bus.getOccupancyHistory();
+        int newOccupancy = bus.getCurrentOccupancy();
+        if (shouldNotifyAdmin(bus)) {
+            bus.getOccupancyHistory().clear();
+            notifyAdminToAddBus(bus);
+        }
+        if((newOccupancy <=10 || newOccupancy ==0) && listo != null ) {
+            listo.add(newOccupancy);
+        }
+        if(bus.getCurrentOccupancy() >=10){
+            bus.getOccupancyHistory().clear();
+        }
+        bus.setOccupancyHistory(listo);
+        busRepository.save(bus);
+//        updateOccupancy(busId,0);
+        return bus;
 
     }
 
@@ -56,13 +72,14 @@ public class BusService {
 
 
         // Update the current occupancy
+        List<Integer> listo = bus.getOccupancyHistory();
         int newOccupancy = bus.getCurrentOccupancy() + delta;
         if (newOccupancy >= 0 && newOccupancy <= bus.getSeatCapacity()) {
             bus.setCurrentOccupancy(newOccupancy);
-            busRepository.save(bus);
-            List<Integer> listo = bus.getOccupancyHistory();
+
+
           // Add the new occupancy to history
-            if(newOccupancy <=10 || newOccupancy ==0) {
+            if((newOccupancy <=10 || newOccupancy ==0 )) {
                 listo.add(newOccupancy);
             }
             else if(listo != null){
@@ -70,15 +87,18 @@ public class BusService {
                 listo.clear();
             }
             bus.setOccupancyHistory(listo);
+            busRepository.save(bus);
 
          // Check for low occupancy and notify admin if necessary
            if (shouldNotifyAdmin(bus)) {
                 notifyAdminToAddBus(bus);
             }
-       } else {
+
+        } else {
           throw new RuntimeException("Invalid occupancy update");
         }
     }
+
 
     public void updateBusByRoute(String busId, String routeId) {
         // Fetch the bus by busId
@@ -111,11 +131,22 @@ public class BusService {
     // New method: Check if the bus has low occupancy for 3 consecutive stops
     private boolean shouldNotifyAdmin(Bus bus) {
         List<Integer> occupancyHistory = bus.getOccupancyHistory();
+        if(occupancyHistory != null)
         return occupancyHistory.size() == 3 && occupancyHistory.stream().allMatch(o -> o <= 10);
+        else
+            return false;
     }
 
     // New method: Notify admin to add a new bus if occupancy is low
-    private void notifyAdminToAddBus(Bus bus) {
+    public void notifyAdminToAddBus(Bus bus) {
         adminClient.notifyAdminToAddBus(bus.getRouteId());
+    }
+
+    public String findIdleBus(){
+       List<Bus> idleBuses=  busRepository.findByRouteIdIsNull();
+       if( !idleBuses.isEmpty() && idleBuses != null){
+           return idleBuses.get(0).getBusId();
+       }
+       else return "there are no idle buses available at the current moment";
     }
 }

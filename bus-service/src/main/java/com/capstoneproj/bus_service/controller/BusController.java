@@ -71,5 +71,10 @@ public class BusController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/getIdleBus")
+    public String getIdleBus(){
+        return busService.findIdleBus();
+    }
+
 
 }

@@ -21,8 +21,11 @@ public interface BusClient {
     @PutMapping("/updateRoute/{busId}/{routeId}")
     String updateBusByRoute(@PathVariable String busId, @PathVariable String routeId);
 
-    @PostMapping("/{busId}/checkOccupancyThreshold")
-    void notifyAdminForAdditionalBus(@PathVariable String busId);
+    @PostMapping("addBusNotified/{busId}/{routeId}")
+    void addBusWhenNotified(@PathVariable String routeId);
+
+    @GetMapping("/getIdleBus")
+     String getIdleBus();
 
      /* @GetMapping("/bus/{busId}/occupancy")
     int getCurrentOccupancy(@PathVariable String busId); */

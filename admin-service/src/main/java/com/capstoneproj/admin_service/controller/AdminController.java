@@ -41,6 +41,13 @@ public class AdminController {
         return new ResponseEntity<>(adminService.assignRouteToBus(busId, routeId), HttpStatus.OK);
     }
 
+    @PostMapping("/notify")
+    public ResponseEntity<?> notifyAdminToAddBus(@RequestParam String routeId)
+    {
+        return new ResponseEntity<>(adminService.notifyAdminToAddBus(routeId),HttpStatus.OK);
+
+}
+
     // Save or update a route
     /*@PutMapping("/routes")
     public ResponseEntity<Route> saveOrUpdateRoute(@RequestBody Route route) {

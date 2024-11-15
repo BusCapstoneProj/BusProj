@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "admin-service", url = "http://localhost:8081/api/admin")
 public interface AdminClient {
 
-    @PostMapping("/api/admin/notify")
+    @PostMapping("/notify")
     void notifyAdminToAddBus(@RequestParam String routeId);
 }
