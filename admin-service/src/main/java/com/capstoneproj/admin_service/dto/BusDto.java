@@ -20,7 +20,7 @@ public class BusDto{
         this.currentOccupancy = currentOccupancy;
         this.currentLocation = currentLocation;
         this.routeId = routeId;
-        this.adminId = adminId;
+        //this.adminId = adminId;
     }
 
     // Getters and Setters

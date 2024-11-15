@@ -1,19 +1,25 @@
 package com.capstoneproj.bus_service.controller;
 
 import com.capstoneproj.bus_service.entity.Bus;
+import com.capstoneproj.bus_service.repository.BusRepository;
 import com.capstoneproj.bus_service.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/buses")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BusController {
 
     @Autowired
     private BusService busService;
+
+    @Autowired
+    private BusRepository busRepository;
 
     // Add a new bus
     @PostMapping
@@ -42,6 +48,12 @@ public class BusController {
         return ResponseEntity.ok(buses);
     }
 
+    @GetMapping("/allBuses")
+    public ResponseEntity<List<Bus>> getAllBuses()
+    {
+        return ResponseEntity.ok(busService.getAllBuses());
+    }
+
     /*// Get current occupancy of a specific bus
     @GetMapping("/{busId}/occupancy")
     public ResponseEntity<Integer> getOccupancy(@PathVariable String busId) {
@@ -55,13 +67,13 @@ public class BusController {
         busService.updateBusLocation(busId, newLocation);
         return ResponseEntity.ok().build();
     } */
-    @PutMapping("/{busId}/occupancy")
+  /*  @PutMapping("/{busId}/occupancy")
     public ResponseEntity<Void> updateOccupancy(
             @PathVariable String busId,
             @RequestParam int delta) {
         busService.updateOccupancy(busId, delta);
         return ResponseEntity.ok().build();
-    }
+    } */
 
     // Controller to handle stop updates and occupancy-based decisions
     @PutMapping("/{busId}/stop")
@@ -72,4 +84,55 @@ public class BusController {
         busService.updateStopAndCheckThreshold(busId, location, deltaOccupancy);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{busId}/board")
+    public ResponseEntity<Void> busBoard(@PathVariable String busId){
+         busService.busBoard(busId) ;
+    return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{busId}/deboard")
+    public ResponseEntity<Void> busDeBoard(@PathVariable String busId){
+        busService.busBoard(busId) ;
+        return ResponseEntity.noContent().build();
+    }
+
+    //update bus by route
+
+    @PutMapping("/updateRoute/{busId}/{routeId}")
+
+    public String updateBusByRoute(@PathVariable String busId, @PathVariable String routeId) {
+
+        busService.updateBusByRoute(busId, routeId);
+
+        return "updated";
+
+    }
+
+
+    @DeleteMapping("/deleteRoute/{routeId}")
+    public void  getBusesByRouteForDeleting(@PathVariable String routeId) {
+        List<Bus> buses = busService.getBusesByRouteId(routeId);
+        for(Bus bus:buses)
+        {
+            bus.setRouteId("null");
+            busRepository.save(bus);
+        }
+
+
+    }
+
+
+
+    @PutMapping("/setRouteToBus/{busId}/{routeId}")
+    public void setRouteToBus(@PathVariable String busId,@PathVariable String routeId)
+    {
+        Optional<Bus> bus=busRepository.findById(busId);
+        if(bus.isPresent())
+        {
+            bus.get().setRouteId(routeId);
+            busRepository.save(bus.get());
+        }
+    }
+
 }

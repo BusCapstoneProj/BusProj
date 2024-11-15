@@ -1,5 +1,6 @@
 package com.capstoneproj.route_service.controller;
 
+import com.capstoneproj.route_service.client.BusClient;
 import com.capstoneproj.route_service.entity.Route;
 import com.capstoneproj.route_service.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/routes")
+
 public class RouteController {
 
     @Autowired
     private RouteService routeService;
 
+    @Autowired
+    private BusClient busClient;
+
     // Endpoint to get all routes
-    @GetMapping
-    public List<Route> getAllRoutes() {
-        return routeService.getAllRoutes();
-    }
+
 
     // Endpoint to get a route by ID
     @GetMapping("/{routeId}")
@@ -51,11 +54,12 @@ public class RouteController {
     }
 
     // Endpoint to delete a route
-    @DeleteMapping("/{routeId}")
+    @DeleteMapping("/deleteRoute/{routeId}")
     public ResponseEntity<Void> deleteRoute(@PathVariable String routeId) {
         boolean isDeleted = routeService.deleteRoute(routeId);
         if (isDeleted) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+             busClient.getBusesByRouteForDeleting(routeId);
+             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -65,6 +69,13 @@ public class RouteController {
     public ResponseEntity<Route> findRouteByStops(@RequestParam String source, @RequestParam String destination) {
         Optional<Route> route = routeService.findRouteByStops(source, destination);
         return route.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+    @GetMapping("/allRoutes")
+    public ResponseEntity<List<Route>> getAllRoutes()
+    {
+        return ResponseEntity.ok(routeService.getAllRoute());
     }
 
 }

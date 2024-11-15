@@ -26,6 +26,11 @@ public class AccountService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    public Optional<Account> findByEmail(String email)
+    {
+        return accountRepo.findByEmail(email);
+    }
+
     // Convert DTO to Model
     private Account dtoToModel(RegisterDto registerDto){
         Account account = new Account();
@@ -115,5 +120,6 @@ public class AccountService {
         account.setEmail(updateEmailDto.getNewEmail());
         accountRepo.save(account);
     }
+
 }
 

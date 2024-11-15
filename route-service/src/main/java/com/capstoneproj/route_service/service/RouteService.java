@@ -64,4 +64,10 @@ public class RouteService {
                 })
                 .findFirst();  // Return the first route that matches the criteria, if any
     }
+
+
+    public List<Route>  getAllRoute()
+    {
+        return routeRepository.findAll();
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,7 @@ public class BusService {
 
     // Add a new bus
     public Bus addBus(Bus bus) {
-        //bus.setCurrentOccupancy(bus.getSeatCapacity());  // Initialize occupancy to zero
+        bus.setCurrentOccupancy(bus.getSeatCapacity());  // Initialize occupancy to zero
         return busRepository.save(bus);
     }
 
@@ -163,4 +164,50 @@ public class BusService {
                 System.out.println("Deleted a bus due to high occupancy threshold exceeded.");
             }
         }
+
+        public void busBoard(String busId)
+        {
+            Optional<Bus> bus=busRepository.findById(busId);
+            if(bus.isPresent())
+            {
+                bus.get().setCurrentOccupancy((bus.get().getCurrentOccupancy())-1);
+                busRepository.save(bus.get());
+            }
+
+        }
+
+    public void busDeBoard(String busId)
+    {
+        Optional<Bus> bus=busRepository.findById(busId);
+        if(bus.isPresent())
+        {
+            bus.get().setCurrentOccupancy((bus.get().getCurrentOccupancy())+ 1);
+            busRepository.save(bus.get());
+        }
+
+    }
+
+
+    public void updateBusByRoute(String busId, String routeId) {
+
+        // Fetch the bus by busId
+
+        Bus bus = busRepository.findById(busId)
+
+                .orElseThrow(() -> new RuntimeException("Bus not found"));
+
+        // Update the routeId
+
+        bus.setRouteId(routeId);
+
+        // Save the updated bus back to the repository
+
+        busRepository.save(bus);
+
+    }
+
+    //Get all Buses
+    public List<Bus> getAllBuses() {
+        return busRepository.findAll();
+    }
 }

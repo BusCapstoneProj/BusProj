@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document
+
 public class Bus {
     @Id
     private String busId;
@@ -13,7 +14,7 @@ public class Bus {
     private int currentOccupancy;
     private String currentLocation;
     private String routeId;
-    private String adminId;
+    //private String adminId;
 
 
 }
